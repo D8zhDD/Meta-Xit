@@ -8,7 +8,13 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  /* ===== RESET E BASE ===== */
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    -webkit-tap-highlight-color: transparent; 
+  }
 
   html, body {
     height: 100%;
@@ -17,30 +23,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    overflow: hidden; /* Evita scroll no body, o scroll fica nos painéis */
   }
 
-  /* ===== PANEL ===== */
+  /* ===== PANEL (MOBILE FIRST) ===== */
   .panel {
     width: 100%;
-    max-width: 420px;
+    height: 100dvh; /* Altura dinâmica para mobile (ignora barra do navegador/teclado) */
     background: #000;
-    border-radius: 0;
-    overflow: hidden;
-    position: relative;
-    min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    border-left: none;
-    border-right: none;
+    position: relative;
+    overflow: hidden;
   }
 
-  /* tablet / desktop: card flutuante */
+  /* tablet / desktop: card flutuante centralizado */
   @media (min-width: 480px) {
-    body { padding: 16px; }
+    body { padding: 16px; overflow: auto; background: #0a0512; }
     .panel {
-      min-height: auto;
-      border-radius: 10px;
+      max-width: 420px;
+      height: auto;
+      min-height: 600px;
+      max-height: 90vh;
+      border-radius: 12px;
       border: 1px solid #2e1d4a;
       box-shadow: 0 10px 40px rgba(0,0,0,0.9);
     }
@@ -49,7 +54,7 @@
   /* ===== TITLEBAR ===== */
   .titlebar {
     background: #3b1f7a;
-    padding: 10px 14px;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -63,9 +68,12 @@
     font-size: 13px;
     font-weight: 800;
     letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .titlebar-left i { color: #c4a8ff; font-size: 11px; }
-  .titlebar-right { display: flex; gap: 6px; align-items: center; }
+  .titlebar-left i { color: #c4a8ff; font-size: 12px; }
+  .titlebar-right { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .win-btn { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0; }
   .win-btn.close { background: #e05c5c; }
   .win-btn.min   { background: #d4a843; }
@@ -77,10 +85,15 @@
     background: #050008;
     border-bottom: 1px solid #1e0d30;
     flex-shrink: 0;
+    overflow-x: auto; /* Permite scroll se a tela for muito fina */
+    scrollbar-width: none; /* Esconde scrollbar no Firefox */
   }
+  .tabs::-webkit-scrollbar { display: none; } /* Esconde scrollbar no Chrome/Safari */
+
   .tab {
     flex: 1;
-    padding: 10px 4px;
+    min-width: 75px; /* Evita que as abas esmaguem umas às outras */
+    padding: 12px 4px;
     text-align: center;
     cursor: pointer;
     font-size: 10px;
@@ -89,13 +102,17 @@
     border: none;
     background: none;
     display: flex;
+    flex-direction: column; /* Em telas muito pequenas, ícone fica em cima */
     align-items: center;
     justify-content: center;
     gap: 4px;
     border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    transition: all 0.2s;
     letter-spacing: 0.3px;
     touch-action: manipulation;
+  }
+  @media (min-width: 360px) {
+    .tab { flex-direction: row; font-size: 11px; gap: 6px; }
   }
   .tab:hover { color: #b09ae0; }
   .tab.active {
@@ -103,45 +120,42 @@
     border-bottom-color: #8c68d4;
     background: rgba(140,104,212,0.07);
   }
-  .tab i { font-size: 10px; }
-
-  @media (min-width: 360px) {
-    .tab { font-size: 11px; gap: 5px; }
-  }
+  .tab i { font-size: 12px; }
 
   /* ===== CONTENT ===== */
   .content {
-    padding: 12px 12px;
+    padding: 14px 12px;
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
   }
-  .content::-webkit-scrollbar { width: 3px; }
-  .content::-webkit-scrollbar-thumb { background: #1a0830; border-radius: 2px; }
+  .content::-webkit-scrollbar { width: 4px; }
+  .content::-webkit-scrollbar-thumb { background: #2a1848; border-radius: 4px; }
 
-  .pane { display: none; }
+  .pane { display: none; animation: fadeIn 0.2s ease; }
   .pane.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
   .section-lbl {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #4a3060;
-    padding: 8px 4px 3px;
+    color: #5a407a;
+    padding: 10px 4px 4px;
   }
-  .section-lbl:first-child { padding-top: 2px; }
 
-  .divider { height: 1px; background: #120020; margin: 6px 0; }
+  .divider { height: 1px; background: #1a0830; margin: 8px 0; }
 
   /* ===== CHECKBOX ROW ===== */
   .row {
     display: flex;
     align-items: center;
-    padding: 7px 5px;
-    border-radius: 5px;
-    transition: background 0.1s;
+    padding: 10px 6px;
+    border-radius: 6px;
+    transition: background 0.15s;
     cursor: pointer;
-    gap: 10px;
+    gap: 12px;
     touch-action: manipulation;
   }
   .row:active { background: rgba(255,255,255,0.05); }
@@ -152,18 +166,19 @@
     color: #cfc8ea;
     cursor: pointer;
     flex: 1;
-    line-height: 1;
+    line-height: 1.2;
+    word-break: break-word; /* Se o texto for gigante, quebra a linha */
   }
 
-  .chk { position: relative; width: 16px; height: 16px; flex-shrink: 0; }
+  .chk { position: relative; width: 18px; height: 18px; flex-shrink: 0; }
   .chk input { display: none; }
   .chk-box {
-    width: 16px; height: 16px;
-    border-radius: 3px;
-    border: 1.5px solid #3a2860;
+    width: 100%; height: 100%;
+    border-radius: 4px;
+    border: 1.5px solid #4a3070;
     background: transparent;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
   .chk input:checked + .chk-box { background: #7c54d4; border-color: #7c54d4; }
   .chk input:checked + .chk-box::after {
@@ -175,123 +190,118 @@
     display: block;
   }
 
-  /* ===== SELECT ===== */
-  .field-row {
+  /* ===== SELECT E SLIDER (FLEXÍVEIS) ===== */
+  .field-row, .slider-row {
     display: flex;
     align-items: center;
-    padding: 5px 5px;
-    gap: 8px;
+    justify-content: space-between;
+    padding: 8px 6px;
+    gap: 12px;
+    flex-wrap: wrap; /* Em telas muito finas, joga o select/slider pra baixo */
   }
-  .field-row label {
-    font-size: 12.5px;
+  .field-row label, .slider-row label {
+    font-size: 13px;
     font-weight: 600;
-    color: #8070a8;
-    min-width: 72px;
-    white-space: nowrap;
+    color: #8a7aa8;
+    flex-shrink: 0;
   }
-  .select-wrap { flex: 1; position: relative; }
+  
+  .select-wrap { flex: 1; min-width: 120px; position: relative; }
   .select-wrap select {
     width: 100%;
-    background: #080010;
-    border: 1px solid #2a1848;
-    color: #cfc8ea;
+    background: #0a0014;
+    border: 1px solid #3a2060;
+    color: #dfd8f5;
     font-family: 'Nunito', sans-serif;
     font-size: 13px;
     font-weight: 600;
-    padding: 7px 28px 7px 10px;
-    border-radius: 5px;
+    padding: 8px 30px 8px 12px;
+    border-radius: 6px;
     outline: none;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
-    transition: border-color 0.15s;
-    touch-action: manipulation;
+    transition: border-color 0.2s;
   }
-  .select-wrap select:focus { border-color: #7c54d4; }
+  .select-wrap select:focus { border-color: #9060d4; }
   .select-wrap::after {
     content: '\f107';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     position: absolute;
-    right: 9px; top: 50%;
+    right: 12px; top: 50%;
     transform: translateY(-50%);
-    color: #7c54d4;
-    font-size: 11px;
+    color: #9060d4;
+    font-size: 12px;
     pointer-events: none;
   }
 
-  /* ===== SLIDER ===== */
-  .slider-row {
-    padding: 5px 5px;
+  /* Slider */
+  .slider-control {
+    flex: 1;
+    min-width: 120px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
-  .slider-row label {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #8070a8;
-    min-width: 72px;
-    white-space: nowrap;
-  }
-  .slider-val { font-size: 11px; font-weight: 700; color: #9878d4; min-width: 30px; text-align: right; }
+  .slider-val { font-size: 12px; font-weight: 700; color: #a888e4; min-width: 28px; text-align: right; flex-shrink: 0; }
   input[type=range] {
     flex: 1;
     -webkit-appearance: none;
-    height: 4px;
-    background: #1a0830;
-    border-radius: 2px;
+    height: 6px;
+    background: #201038;
+    border-radius: 3px;
     outline: none;
     cursor: pointer;
-    touch-action: pan-y;
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px; height: 18px;
+    width: 20px; height: 20px;
     border-radius: 50%;
-    background: #7c54d4;
-    cursor: pointer;
+    background: #9060d4;
     border: 3px solid #000;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
   }
 
   /* ===== INJECT BUTTONS ===== */
-  .inject-row { display: flex; gap: 8px; padding: 6px 2px 2px; }
+  .inject-row { display: flex; flex-direction: column; gap: 10px; padding: 10px 4px 4px; }
+  @media (min-width: 320px) { .inject-row { flex-direction: row; } }
+  
   .inj-btn {
     flex: 1;
-    padding: 11px 6px;
-    border-radius: 6px;
+    padding: 12px 10px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     font-family: 'Nunito', sans-serif;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    transition: filter 0.15s, transform 0.1s;
-    touch-action: manipulation;
+    gap: 8px;
+    transition: transform 0.1s, filter 0.2s;
   }
-  .inj-btn:active { transform: scale(0.96); filter: brightness(1.2); }
-  @media (hover: hover) { .inj-btn:hover { filter: brightness(1.2); } }
-  .inj-btn.ff    { background: #2a1858; color: #d8c8ff; }
-  .inj-btn.ffmax { background: #0e2e20; color: #a0ffcc; }
+  .inj-btn:active { transform: scale(0.95); filter: brightness(1.2); }
+  .inj-btn.ff    { background: #3b1f7a; color: #e0d5ff; box-shadow: 0 4px 15px rgba(59,31,122,0.3); }
+  .inj-btn.ffmax { background: #00cc66; color: #052e18; box-shadow: 0 4px 15px rgba(0,204,102,0.2); }
 
   /* ===== FOOTER ===== */
   .footer {
     background: #000;
-    border-top: 1px solid #130023;
-    padding: 7px 14px;
+    border-top: 1px solid #1a0830;
+    padding: 10px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
   }
-  .footer-brand { font-size: 10px; font-weight: 700; color: #3a2860; letter-spacing: 0.5px; }
-  .footer-status { display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; }
-  .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .status-dot.on  { background: #00cc66; }
-  .status-dot.off { background: #cc3333; }
+  .footer-brand { font-size: 10px; font-weight: 800; color: #4a3070; letter-spacing: 0.5px; }
+  .footer-status { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.on  { background: #00cc66; box-shadow: 0 0 8px #00cc66; }
+  .status-dot.off { background: #cc3333; box-shadow: 0 0 8px #cc3333; }
   .status-text.on  { color: #00cc66; }
   .status-text.off { color: #cc3333; }
 
@@ -300,64 +310,84 @@
     display: none;
     position: absolute;
     inset: 0;
-    background: #020005;
+    background: #05020a;
     flex-direction: column;
-    overflow: hidden;
-    font-family: 'Courier New', monospace;
     z-index: 10;
+    font-family: 'Courier New', monospace;
   }
-  @media (min-width: 480px) { .terminal-wrap { border-radius: 10px; } }
-  .terminal-wrap.show { display: flex; }
+  .terminal-wrap.show { display: flex; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
   .term-header {
-    background: #050008;
-    padding: 10px 14px;
+    background: #0a0512;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #150025;
+    border-bottom: 1px solid #1e0d30;
     flex-shrink: 0;
   }
-  .term-title { color: #00cc66; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; }
+  .term-title { 
+    color: #00cc66; 
+    font-size: 11px; 
+    font-weight: bold; 
+    letter-spacing: 0.5px; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 10px;
+  }
   .term-close-btn {
-    background: #0d0018;
-    border: 1px solid #2a1848;
-    color: #6a5a8a;
-    padding: 4px 12px;
+    background: transparent;
+    border: 1px solid #3a2060;
+    color: #8a7aa8;
+    padding: 6px 12px;
     cursor: pointer;
     font-size: 11px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    transition: all 0.15s;
-    touch-action: manipulation;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
   }
   .term-close-btn:active { background: #cc3333; color: #fff; border-color: #cc3333; }
-  @media (hover: hover) { .term-close-btn:hover { background: #cc3333; color: #fff; border-color: #cc3333; } }
 
-  .term-body { flex: 1; padding: 12px 15px; overflow-y: auto; line-height: 2; }
-  .term-body::-webkit-scrollbar { width: 3px; }
-  .term-body::-webkit-scrollbar-thumb { background: #1a2e20; border-radius: 2px; }
-  .t-line { opacity: 0; transition: opacity 0.05s; color: #00bb55; white-space: pre-wrap; font-size: 11px; }
+  .term-body { 
+    flex: 1; 
+    padding: 14px; 
+    overflow-y: auto; 
+    line-height: 1.8; 
+  }
+  .t-line { 
+    opacity: 0; 
+    transition: opacity 0.1s; 
+    color: #00cc66; 
+    white-space: pre-wrap; /* Garante que linhas gigantes quebrem */
+    word-break: break-all;
+    font-size: 12px; 
+    margin-bottom: 2px;
+  }
   .t-line.vis  { opacity: 1; }
-  .t-line.dim  { color: #1a3828; }
-  .t-line.warn { color: #b89000; }
+  .t-line.dim  { color: #2a5a38; }
+  .t-line.warn { color: #d4a843; }
   .t-line.ok   { color: #00ff88; font-weight: bold; }
-  .t-line.cursor::after { content: '_'; animation: cblink 0.7s infinite; }
+  .t-line.cursor::after { content: '_'; animation: cblink 0.8s infinite; }
   @keyframes cblink { 0%,100%{opacity:1}50%{opacity:0} }
 
   .success-bar {
     display: none;
-    margin: 10px 15px 14px;
-    border-radius: 6px;
-    padding: 12px 15px;
+    margin: 10px 14px 14px;
+    border-radius: 8px;
+    padding: 14px;
     font-size: 13px;
     font-weight: bold;
     text-align: center;
     border: 1px solid;
     font-family: 'Nunito', sans-serif;
+    word-break: break-word;
   }
-  .success-bar.show { display: block; }
-  .success-bar .sv { font-size: 10px; margin-top: 4px; opacity: 0.65; letter-spacing: 0.5px; }
+  .success-bar.show { display: block; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes popIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-bar .sv { font-size: 10px; margin-top: 6px; opacity: 0.7; letter-spacing: 0.5px; }
 
   /* ===== LOGIN ===== */
   .login-screen {
@@ -367,29 +397,8 @@
     display: flex;
     flex-direction: column;
     z-index: 20;
-    overflow: hidden;
   }
-  @media (min-width: 480px) { .login-screen { border-radius: 10px; } }
   .login-screen.hidden { display: none; }
-
-  .login-titlebar {
-    background: #3b1f7a;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .login-titlebar-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #e0d5ff;
-    font-size: 13px;
-    font-weight: 800;
-  }
-  .login-titlebar-left i { color: #c4a8ff; font-size: 11px; }
-  .login-titlebar-right { display: flex; gap: 6px; }
 
   .login-body {
     flex: 1;
@@ -397,162 +406,112 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px 24px 24px;
-    gap: 22px;
+    padding: 20px 24px;
+    gap: 24px;
+    overflow-y: auto; /* Se o teclado subir no mobile, permite scroll */
   }
 
   .login-icon {
-    width: 56px; height: 56px;
-    background: #0d0018;
-    border: 1px solid #3a1d68;
+    width: 64px; height: 64px;
+    background: #0a0014;
+    border: 1px solid #3b1f7a;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #9060d4;
-    font-size: 24px;
+    font-size: 28px;
+    box-shadow: 0 0 20px rgba(144,96,212,0.15);
+    flex-shrink: 0;
   }
 
-  .login-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #d8c8ff;
-    letter-spacing: 0.5px;
-    text-align: center;
-    margin-bottom: -14px;
-  }
-  .login-sub {
-    font-size: 12px;
-    font-weight: 600;
-    color: #4a3870;
-    text-align: center;
-  }
+  .login-header-text { text-align: center; }
+  .login-title { font-size: 18px; font-weight: 800; color: #e0d5ff; margin-bottom: 4px; }
+  .login-sub { font-size: 13px; font-weight: 600; color: #6a5a8a; }
 
   .key-field {
     width: 100%;
+    max-width: 300px;
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 10px;
   }
-  .key-label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #7a6a9a;
-    letter-spacing: 0.5px;
-  }
+  .key-label { font-size: 12px; font-weight: 800; color: #8a7aa8; text-transform: uppercase; letter-spacing: 1px; }
+  
   .key-input-row {
     display: flex;
-    border: 1px solid #2e1a50;
-    border-radius: 6px;
+    border: 1px solid #3a2060;
+    border-radius: 8px;
     overflow: hidden;
-    background: #080010;
-    transition: border-color 0.15s;
+    background: #0a0014;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .key-input-row:focus-within { border-color: #7c54d4; }
-  .key-input-row.error { border-color: #cc3333 !important; animation: shake 0.3s ease; }
-  @keyframes shake {
-    0%,100%{transform:translateX(0)}
-    20%,60%{transform:translateX(-6px)}
-    40%,80%{transform:translateX(6px)}
-  }
-
+  .key-input-row:focus-within { border-color: #9060d4; box-shadow: 0 0 10px rgba(144,96,212,0.2); }
+  .key-input-row.error { border-color: #cc3333 !important; box-shadow: 0 0 10px rgba(204,51,51,0.2); animation: shake 0.4s ease; }
+  
   #keyInput {
     flex: 1;
     background: transparent;
     border: none;
     outline: none;
-    color: #cfc8ea;
+    color: #dfd8f5;
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
-    font-weight: 600;
-    padding: 11px 13px;
-    letter-spacing: 0.5px;
-    min-width: 0;
+    font-weight: 700;
+    padding: 14px;
+    min-width: 0; /* Previne que o input estoure o flexbox no mobile */
   }
-  #keyInput::placeholder { color: #2a1840; }
+  #keyInput::placeholder { color: #3a2060; font-weight: 600; }
 
   .enter-btn {
     background: #3b1f7a;
     border: none;
-    color: #c4a8ff;
-    padding: 0 16px;
+    color: #e0d5ff;
+    padding: 0 20px;
     cursor: pointer;
-    font-size: 15px;
-    transition: background 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 16px;
+    transition: background 0.2s;
     flex-shrink: 0;
-    touch-action: manipulation;
   }
   .enter-btn:active { background: #7c54d4; }
-  @media (hover: hover) { .enter-btn:hover { background: #5030a0; } }
 
   .show-pass-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
     width: fit-content;
-    touch-action: manipulation;
+    padding: 4px 0;
   }
-  .show-pass-chk-box {
-    width: 15px; height: 15px;
-    border-radius: 3px;
-    border: 1.5px solid #3a2860;
-    background: transparent;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-  .show-pass-chk-box.checked {
-    background: #7c54d4;
-    border-color: #7c54d4;
-  }
-  .show-pass-chk-box.checked::after {
-    content: '';
-    width: 8px; height: 5px;
-    border-left: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-    transform: rotate(-45deg) translate(0, -1px);
-    display: block;
-  }
-  .show-pass-row span {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6a5a8a;
-    user-select: none;
-  }
+  .show-pass-row span { font-size: 13px; font-weight: 600; color: #8a7aa8; user-select: none; }
 
   .error-msg {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 700;
-    color: #cc3333;
+    color: #e05c5c;
     text-align: center;
-    min-height: 17px;
-    letter-spacing: 0.3px;
+    min-height: 18px;
   }
 
   .login-footer {
     background: #000;
-    border-top: 1px solid #100018;
-    padding: 7px 14px;
+    border-top: 1px solid #1a0830;
+    padding: 10px 14px;
     flex-shrink: 0;
+    text-align: center;
   }
-  .login-footer-brand { font-size: 10px; font-weight: 700; color: #2e1e48; letter-spacing: 0.5px; }
 </style>
 </head>
 <body>
 <div class="panel" id="mainPanel">
 
-  <!-- ========== LOGIN ========== -->
   <div class="login-screen" id="loginScreen">
-    <div class="login-titlebar">
-      <div class="login-titlebar-left">
+    <div class="titlebar">
+      <div class="titlebar-left">
         <i class="fa-solid fa-triangle-exclamation"></i>
-        META-XIT by meta 1.99
+        META-XIT 1.99
       </div>
-      <div class="login-titlebar-right">
+      <div class="titlebar-right">
         <button class="win-btn min"></button>
         <button class="win-btn max"></button>
         <button class="win-btn close"></button>
@@ -560,23 +519,23 @@
     </div>
 
     <div class="login-body">
-      <div class="login-icon">
-        <i class="fa-solid fa-key"></i>
+      <div class="login-icon"><i class="fa-solid fa-fingerprint"></i></div>
+      
+      <div class="login-header-text">
+        <div class="login-title">Autenticação</div>
+        <div class="login-sub">Insira sua key de acesso VIP</div>
       </div>
-      <div class="login-title">Autenticacao</div>
-      <div class="login-sub">Insira sua key de acesso</div>
 
       <div class="key-field">
-        <span class="key-label">Key</span>
+        <span class="key-label">Key de Acesso</span>
         <div class="key-input-row" id="keyInputRow">
-          <input id="keyInput" type="password" placeholder="___________" autocomplete="off"
-            onkeydown="if(event.key==='Enter')tryLogin()">
+          <input id="keyInput" type="password" placeholder="Digite sua key..." autocomplete="off" onkeydown="if(event.key==='Enter')tryLogin()">
           <button class="enter-btn" onclick="tryLogin()" title="Entrar">
-            <i class="fa-solid fa-arrow-up"></i>
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
           </button>
         </div>
         <div class="show-pass-row" onclick="toggleShowPass()">
-          <div class="show-pass-chk-box" id="showPassBox"></div>
+          <div class="chk-box" id="showPassBox" style="width:18px;height:18px;"></div>
           <span>Mostrar senha</span>
         </div>
       </div>
@@ -585,15 +544,14 @@
     </div>
 
     <div class="login-footer">
-      <span class="login-footer-brand">META-XIT FFH4X v1.99</span>
+      <span class="footer-brand">META-XIT FFH4X v1.99</span>
     </div>
   </div>
 
-  <!-- ========== TERMINAL ========== -->
   <div class="terminal-wrap" id="terminal">
     <div class="term-header">
       <span class="term-title" id="termTitle">C:\META-XIT> inject.exe</span>
-      <button class="term-close-btn" onclick="closeTerminal()">fechar</button>
+      <button class="term-close-btn" onclick="closeTerminal()">FECHAR</button>
     </div>
     <div class="term-body" id="termBody"></div>
     <div class="success-bar" id="successBar">
@@ -602,11 +560,10 @@
     </div>
   </div>
 
-  <!-- ========== TITLEBAR ========== -->
   <div class="titlebar">
     <div class="titlebar-left">
       <i class="fa-solid fa-triangle-exclamation"></i>
-      META-XIT by meta 1.99
+      META-XIT by meta
     </div>
     <div class="titlebar-right">
       <button class="win-btn min"></button>
@@ -615,7 +572,6 @@
     </div>
   </div>
 
-  <!-- ========== TABS ========== -->
   <div class="tabs">
     <button class="tab active" onclick="switchTab('aim',this)">
       <i class="fa-solid fa-crosshairs"></i> AIMBOT
@@ -631,111 +587,102 @@
     </button>
   </div>
 
-  <!-- ========== CONTENT ========== -->
   <div class="content">
 
-    <!-- AIMBOT -->
     <div class="pane active" id="pane-aim">
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>Aimbot</label>
+        <label>Aimbot Principal</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>Aimbot v2 <span style="font-size:10px;color:#4a3060;">(corrigido)</span></label>
+        <label>Aimbot v2 <span style="font-size:11px;color:#6a5a8a;">(corrigido)</span></label>
       </div>
       <div class="divider"></div>
+      
       <div class="field-row">
-        <label>Modo</label>
+        <label>Modo de Jogo</label>
         <div class="select-wrap">
-          <select><option>Legit</option><option>Rage</option></select>
+          <select><option>Legit</option><option>Rage</option><option>Semi-Rage</option></select>
         </div>
       </div>
       <div class="field-row">
-        <label>Foco</label>
+        <label>Foco da Mira</label>
         <div class="select-wrap">
-          <select><option>Head</option><option>Torso</option><option>Foot</option></select>
+          <select><option>Head (Capa)</option><option>Torso (Peito)</option><option>Foot (Pé)</option></select>
         </div>
       </div>
       <div class="divider"></div>
+      
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>Exibir FOV</label>
+        <label>Exibir FOV na Tela</label>
       </div>
       <div class="slider-row">
-        <label>FOV Size</label>
-        <input type="range" min="0" max="320" value="160"
-          oninput="document.getElementById('fovVal').textContent=this.value">
-        <span class="slider-val" id="fovVal">160</span>
+        <label>Tamanho FOV</label>
+        <div class="slider-control">
+          <input type="range" min="0" max="320" value="160" oninput="document.getElementById('fovVal').textContent=this.value">
+          <span class="slider-val" id="fovVal">160</span>
+        </div>
       </div>
       <div class="field-row">
-        <label>FOV Color</label>
+        <label>Cor do FOV</label>
         <div class="select-wrap">
-          <select><option>Blue</option><option>Yellow</option><option>Green</option><option>Orange</option><option>Red</option><option>Purple</option></select>
+          <select><option>Azul</option><option>Amarelo</option><option>Verde</option><option>Vermelho</option></select>
         </div>
       </div>
     </div>
 
-    <!-- ESP -->
     <div class="pane" id="pane-esp">
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>ESP</label>
+        <label>Ativar ESP Geral</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>ESP Name</label>
+        <label>ESP Nome</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>ESP Tracer</label>
+        <label>ESP Linha (Tracer)</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>ESP Bones</label>
+        <label>ESP Esqueleto (Bones)</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>ESP Life</label>
+        <label>ESP Vida / Colete</label>
       </div>
       <div class="divider"></div>
       <div class="field-row">
-        <label>ESP Color</label>
+        <label>Cor Primária ESP</label>
         <div class="select-wrap">
-          <select><option>Blue</option><option>Yellow</option><option>Green</option><option>Orange</option><option>Red</option><option>Purple</option></select>
+          <select><option>Verde Neon</option><option>Vermelho</option><option>Roxo</option><option>Branco</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="pane-misc">
+      <div class="row" onclick="toggleChk(this)">
+        <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
+        <label>Speed Hack (Flash)</label>
+      </div>
+      <div class="slider-row">
+        <label>Velocidade</label>
+        <div class="slider-control">
+          <input type="range" min="0" max="300" value="100" oninput="document.getElementById('spdVal').textContent=this.value">
+          <span class="slider-val" id="spdVal">100</span>
         </div>
       </div>
       <div class="divider"></div>
       <div class="row" onclick="toggleChk(this)">
-        <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>ESP Guns</label>
-      </div>
-      <div class="row" onclick="toggleChk(this)">
-        <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>ESP Team</label>
-      </div>
-    </div>
-
-    <!-- MISC -->
-    <div class="pane" id="pane-misc">
-      <div class="row" onclick="toggleChk(this)">
-        <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>Speed Hack</label>
-      </div>
-      <div class="slider-row">
-        <label>Speed</label>
-        <input type="range" min="0" max="300" value="100"
-          oninput="document.getElementById('spdVal').textContent=this.value">
-        <span class="slider-val" id="spdVal">100</span>
-      </div>
-      <div class="divider"></div>
-      <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>Anti Knock</label>
+        <label>Anti Knock (Não Cai)</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>Municao Infinita</label>
+        <label>Munição Infinita (AR/SMG)</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
@@ -743,46 +690,45 @@
       </div>
     </div>
 
-    <!-- CONFIG -->
     <div class="pane" id="pane-config">
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>Anti-Ban</label>
+        <label>Anti-Ban Shield (Seguro)</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox" checked><div class="chk-box"></div></div>
-        <label>Bypass</label>
+        <label>Bypass Emuladores</label>
       </div>
       <div class="row" onclick="toggleChk(this)">
         <div class="chk"><input type="checkbox"><div class="chk-box"></div></div>
-        <label>Anti Telagem</label>
+        <label>Ocultar na Gravação (OBS/Telas)</label>
       </div>
       <div class="divider"></div>
-      <div class="section-lbl">Injecao</div>
+      <div class="section-lbl">Painel de Injeção</div>
       <div class="inject-row">
         <button class="inj-btn ff" onclick="doInject('ff')">
-          <i class="fa-solid fa-syringe"></i> Free Fire
+          <i class="fa-solid fa-syringe"></i> FREE FIRE
         </button>
         <button class="inj-btn ffmax" onclick="doInject('ffmax')">
-          <i class="fa-solid fa-syringe"></i> FF Max
+          <i class="fa-solid fa-rocket"></i> FF MAX
         </button>
       </div>
     </div>
 
   </div>
 
-  <!-- ========== FOOTER ========== -->
   <div class="footer">
-    <span class="footer-brand">META-XIT FFH4X v1.99</span>
+    <span class="footer-brand">META-XIT v1.99</span>
     <div class="footer-status">
       <span class="status-dot off" id="statusDot"></span>
-      <span class="status-text off" id="statusText">Injetado: Nao</span>
+      <span class="status-text off" id="statusText">Aguardando...</span>
     </div>
   </div>
 
 </div>
 
 <script>
+  // LOGIN
   const CORRECT_KEY = '!@metaxit9981CodeLogin';
   let showPassOn = false;
 
@@ -791,10 +737,14 @@
     const box   = document.getElementById('showPassBox');
     const input = document.getElementById('keyInput');
     if (showPassOn) {
-      box.classList.add('checked');
+      box.style.background = '#7c54d4';
+      box.style.borderColor = '#7c54d4';
+      box.innerHTML = '<div style="width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);"></div>';
       input.type = 'text';
     } else {
-      box.classList.remove('checked');
+      box.style.background = 'transparent';
+      box.style.borderColor = '#4a3070';
+      box.innerHTML = '';
       input.type = 'password';
     }
   }
@@ -807,13 +757,15 @@
       err.textContent = '';
       document.getElementById('loginScreen').classList.add('hidden');
     } else {
-      err.textContent = 'Key invalida. Tente novamente.';
+      err.textContent = 'Key inválida ou expirada.';
+      row.classList.remove('error');
+      void row.offsetWidth; // trigger reflow para resetar animação
       row.classList.add('error');
       document.getElementById('keyInput').value = '';
-      setTimeout(() => row.classList.remove('error'), 400);
     }
   }
 
+  // INTERFACE
   function switchTab(name, el) {
     document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -823,9 +775,12 @@
 
   function toggleChk(row) {
     const inp = row.querySelector('input[type=checkbox]');
-    if (inp) inp.checked = !inp.checked;
+    if (inp) {
+      inp.checked = !inp.checked;
+    }
   }
 
+  // TERMINAL INJECT
   function closeTerminal() {
     document.getElementById('terminal').classList.remove('show');
   }
@@ -835,7 +790,7 @@
     const text = document.getElementById('statusText');
     dot.className  = 'status-dot '  + (state ? 'on' : 'off');
     text.className = 'status-text ' + (state ? 'on' : 'off');
-    text.textContent = 'Injetado: ' + (state ? 'Sim' : 'Nao');
+    text.textContent = state ? 'INJETADO' : 'NÃO INJETADO';
   }
 
   function doInject(type) {
@@ -849,27 +804,25 @@
     const successBar = document.getElementById('successBar');
 
     document.getElementById('termTitle').textContent =
-      'C:\\META-XIT> inject.exe --target=' + (isMax ? 'ffmax' : 'ff');
+      'C:\\META-XIT> inject --tgt=' + (isMax ? 'ffmax' : 'ff');
     termBody.innerHTML = '';
     successBar.classList.remove('show');
     setInjected(false);
     document.getElementById('terminal').classList.add('show');
 
     const lines = [
-      { d: 0,    c: 'dim',  t: 'META-XIT FFH4X by meta  ' + ver },
-      { d: 130,  c: '',     t: 'Buscando processo alvo...' },
-      { d: 300,  c: '',     t: gameName + '  [PID:' + pid + ']  encontrado' },
-      { d: 460,  c: '',     t: 'Base address:   0x' + addr },
-      { d: 620,  c: 'warn', t: 'Verificando protecoes do jogo...' },
-      { d: 820,  c: '',     t: 'Bypass ativo.' },
-      { d: 970,  c: '',     t: 'Alocando memoria................  ok' },
-      { d: 1110, c: '',     t: 'Modulo AIMBOT...................  ok' },
-      { d: 1250, c: '',     t: 'Modulo ESP......................  ok' },
-      { d: 1390, c: '',     t: 'Modulo MISC.....................  ok' },
-      { d: 1530, c: '',     t: 'Anti-Ban Shield.................  ok' },
-      { d: 1670, c: '',     t: 'Anti-Telagem....................  ok' },
-      { d: 1810, c: '',     t: 'Verificando integridade.........  ok' },
-      { d: 2000, c: 'ok',   t: '[+] Todos os modulos carregados!' },
+      { d: 0,    c: 'dim',  t: 'META-XIT Core Engine ' + ver },
+      { d: 150,  c: '',     t: '[*] Escaneando memória do emulador...' },
+      { d: 350,  c: '',     t: '[+] ' + gameName + ' [PID:' + pid + '] encontrado.' },
+      { d: 500,  c: '',     t: '[*] Resolvendo base address: 0x' + addr },
+      { d: 700,  c: 'warn', t: '[!] Desativando telemetria e proteções...' },
+      { d: 900,  c: '',     t: '[+] Bypass Anti-Cheat ativado com sucesso.' },
+      { d: 1050, c: '',     t: '[*] Escrevendo hooks na memória...' },
+      { d: 1200, c: '',     t: '  -> Modulo AIMBOT........... OK' },
+      { d: 1350, c: '',     t: '  -> Modulo ESP.............. OK' },
+      { d: 1500, c: '',     t: '  -> Modulo MISC............. OK' },
+      { d: 1650, c: '',     t: '  -> Limpeza de Logs......... OK' },
+      { d: 1850, c: 'ok',   t: '[+] INJEÇÃO CONCLUÍDA SEM ERROS.' },
     ];
 
     lines.forEach(({ d, c, t }) => {
@@ -887,18 +840,20 @@
       cur.className = 't-line vis cursor';
       cur.textContent = '';
       termBody.appendChild(cur);
-    }, 2150);
+      termBody.scrollTop = termBody.scrollHeight;
+    }, 1950);
 
     setTimeout(() => {
       document.querySelector('.t-line.cursor')?.classList.remove('cursor');
-      document.getElementById('sText').textContent = '[OK]  ' + gameName + '  injetado com sucesso';
-      document.getElementById('sVer').textContent  = ver + '  |  META-XIT FFH4X by meta';
-      successBar.style.borderColor = isMax ? '#00cc66' : '#7c54d4';
-      successBar.style.color       = isMax ? '#00ff88' : '#d8c8ff';
-      successBar.style.background  = isMax ? '#050e08' : '#080010';
+      document.getElementById('sText').textContent = gameName + ' Injetado!';
+      document.getElementById('sVer').textContent  = 'Safe Version: ' + ver;
+      successBar.style.borderColor = isMax ? '#00cc66' : '#9060d4';
+      successBar.style.color       = isMax ? '#00ff88' : '#e0d5ff';
+      successBar.style.background  = isMax ? 'rgba(0, 204, 102, 0.1)' : 'rgba(144, 96, 212, 0.1)';
       successBar.classList.add('show');
+      termBody.scrollTop = termBody.scrollHeight;
       setInjected(true);
-    }, 2500);
+    }, 2400);
   }
 </script>
 </body>
